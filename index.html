@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>User Data Form</h1>
+<form id="userForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
+    <br><br>
+    <label for="age">Age:</label>
+    <input type="number" id="age" required>
+    <br><br>
+    <button type="submit">Submit</button>
+</form>
+
+<button id="filterBtn">Show Users Above 18</button>
+<button id="sortBtn">Sort by Age</button>
+
+<h2>Stored User Data</h2>
+<table id="userTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- User data will be inserted here -->
+    </tbody>
+</table>
+
+<script>
+    const userForm = document.getElementById('userForm');
+    const userTable = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+    const filterBtn = document.getElementById('filterBtn');
+    const sortBtn = document.getElementById('sortBtn');
+
+    // Load existing data from localStorage
+    const loadData = () => {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        displayData(users);
+    };
+
+    // Display data in the table
+    const displayData = (users) => {
+        userTable.innerHTML = ''; // Clear existing table data
+        users.forEach(user => {
+            const row = userTable.insertRow();
+            row.insertCell(0).innerText = user.name;
+            row.insertCell(1).innerText = user.age;
+        });
+    };
+
+    // Handle form submission
+    userForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const age = document.getElementById('age').value;
+
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        users.push({ name, age: Number(age) });
+        localStorage.setItem('users', JSON.stringify(users));
+
+        userForm.reset();
+        loadData();
+    });
+
+    // Filter users above 18
+    filterBtn.addEventListener('click', () => {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const filteredUsers = users.filter(user => user.age > 18);
+        displayData(filteredUsers);
+    });
+
+    // Sort users by age
+    sortBtn.addEventListener('click', () => {
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const sortedUsers = users.sort((a, b) => a.age - b.age);
+        displayData(sortedUsers);
+    });
+
+    // Initial load of data
+    loadData();
+</script>
+
+</body>
+</html>
